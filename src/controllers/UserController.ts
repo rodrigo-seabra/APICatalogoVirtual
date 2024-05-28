@@ -5,10 +5,6 @@ import bcrypt from "bcrypt";
 import Token from "../helpers/Token";
 
 class UserController {
-  public async index(req: Request, res: Response): Promise<Response> {
-    return res.json("Hello World");
-  }
-
   public async login(req: Request, res: Response): Promise<Response> {
     const { email, password } = req.body as UsersInterface;
     let userFind = await Users.findOne({ email: email });
@@ -44,6 +40,7 @@ class UserController {
           phone: req.body.phone,
           email: req.body.email,
           password: req.body.password,
+          image: undefined,
           confirmpassword: req.body.confirmpassword,
         };
         if (req.file) {
