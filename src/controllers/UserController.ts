@@ -7,6 +7,7 @@ import Token from "../helpers/Token";
 class UserController {
   public async login(req: Request, res: Response): Promise<Response> {
     const { email, password } = req.body as UsersInterface;
+    console.log(email);
     let userFind = await Users.findOne({ email: email });
     if (userFind) {
       if (!email) {
@@ -26,6 +27,37 @@ class UserController {
       return res.status(422).json({
         message: "Não há usuário cadastrado com esse e-mail",
       });
+    }
+  }
+
+  public async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      let user = (await Token.getUser(req, res)) as UsersInterface;
+      const { password, confirmpassword } = req.body as UsersInterface;
+      if (!password) {
+        return res.status(422).json({ message: "A senha é obrigatória!" });
+      } else if (!confirmpassword) {
+        return res
+          .status(422)
+          .json({ message: "A senha de confirmaçãao é obrigatória!" });
+      } else if (password !== confirmpassword) {
+        return res.status(422).json({
+          message: "A senha e a confirmação de senha precisam ser iguais!",
+        });
+      } else {
+        const checkPassword = await bcrypt.compare(password, user.password);
+        if (!checkPassword) {
+          return res.status(422).json({
+            message: "Senha inválida",
+          });
+        }
+        await Users.findOneAndDelete({ CPF: user.CPF });
+        return res
+          .status(200)
+          .json({ message: "Usuário removido com sucesso" });
+      }
+    } catch (err: any) {
+      return res.status(500).json({ status: err.message });
     }
   }
 

@@ -14,12 +14,17 @@ class Routes {
       Middlewares.imageUpload.single("image"),
       UserController.store
     );
-    this.routes.post("/login", UserController.login);
+    this.routes.post("/user/login", UserController.login);
     this.routes.patch(
-      "/update",
+      "/user/update/:id",
       Middlewares.authMiddleware,
       Middlewares.imageUpload.single("image"),
       UserController.update
+    );
+    this.routes.delete(
+      "/user/delete/:id",
+      Middlewares.authMiddleware,
+      UserController.delete
     );
   }
 }
