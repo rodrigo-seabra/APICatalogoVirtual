@@ -1,7 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { UsersInterface } from "../interfaces/Users.interface";
 
-interface UsersModel extends UsersInterface, Document {}
 const UsersSchema = new Schema(
   {
     name: {
@@ -32,5 +31,5 @@ const UsersSchema = new Schema(
     timestamps: true,
   }
 );
-
+export interface UsersModel extends UsersInterface, Document {}
 export default model<UsersModel>("User", UsersSchema);

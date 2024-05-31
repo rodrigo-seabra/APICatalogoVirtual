@@ -1,7 +1,7 @@
 import { json, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { UsersInterface } from "../interfaces/Users.interface";
-import Users from "../models/Users";
+import Users, { UsersModel } from "../models/Users";
 
 interface JwtPayloadWithCPF extends JwtPayload {
   CPF: string;
@@ -61,7 +61,7 @@ class Token {
     try {
       const decoded = jwt.verify(token, "010806Catalogo") as JwtPayloadWithCPF;
       const CPF = decoded.CPF;
-      const user = await Users.findOne({ CPF: CPF });
+      const user: UsersModel | null = await Users.findOne({ CPF: CPF });
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado!" });
       }

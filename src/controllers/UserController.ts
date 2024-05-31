@@ -1,14 +1,13 @@
 import { json, Request, Response } from "express";
 import Users from "../models/Users";
-import { UsersInterface } from "../interfaces/Users.interface";
 import bcrypt from "bcrypt";
 import Token from "../helpers/Token";
+import { UsersModel } from "../models/Users";
 
 class UserController {
   public async login(req: Request, res: Response): Promise<Response> {
-    const { email, password } = req.body as UsersInterface;
-    console.log(email);
-    let userFind = await Users.findOne({ email: email });
+    const { email, password } = req.body as UsersModel;
+    let userFind: UsersModel | null = await Users.findOne({ email: email });
     if (userFind) {
       if (!email) {
         return res.status(422).json({ message: "O email é obrigatório!" });
@@ -32,8 +31,8 @@ class UserController {
 
   public async delete(req: Request, res: Response): Promise<Response> {
     try {
-      let user = (await Token.getUser(req, res)) as UsersInterface;
-      const { password, confirmpassword } = req.body as UsersInterface;
+      let user: UsersModel = await Token.getUser(req, res);
+      const { password, confirmpassword } = req.body as UsersModel;
       if (!password) {
         return res.status(422).json({ message: "A senha é obrigatória!" });
       } else if (!confirmpassword) {
@@ -63,10 +62,11 @@ class UserController {
 
   public async store(req: Request, res: Response): Promise<Response> {
     try {
-      let userFind = await Users.findOne({ CPF: req.body.CPF });
+      let userFind: UsersModel | null = await Users.findOne({
+        CPF: req.body.CPF,
+      });
       if (!userFind) {
-        let user: UsersInterface;
-        user = {
+        let user = {
           CPF: req.body.CPF,
           name: req.body.name,
           phone: req.body.phone,
@@ -74,7 +74,7 @@ class UserController {
           password: req.body.password,
           image: undefined,
           confirmpassword: req.body.confirmpassword,
-        };
+        } as UsersModel;
         if (req.file) {
           user.image = req.file.filename;
         }
@@ -119,9 +119,9 @@ class UserController {
 
   public async update(req: Request, res: Response): Promise<any> {
     try {
-      let user = (await Token.getUser(req, res)) as UsersInterface;
+      let user = (await Token.getUser(req, res)) as UsersModel;
       const { name, email, phone, password, confirmpassword } =
-        req.body as UsersInterface;
+        req.body as UsersModel;
       if (req.file) {
         user.image = req.file.filename;
       }

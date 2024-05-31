@@ -1,13 +1,16 @@
 import { Router } from "express";
 import UserController from "../controllers/UserController";
 import Middlewares from "../middlewares/Middlewares";
+import ProductsController from "../controllers/ProductsController";
 
 class Routes {
   public routes: Router;
   public constructor() {
     this.routes = Router();
     this.UserRoutes();
+    this.ProductsRoutes();
   }
+
   private UserRoutes() {
     this.routes.post(
       "/user",
@@ -26,6 +29,10 @@ class Routes {
       Middlewares.authMiddleware,
       UserController.delete
     );
+  }
+
+  private ProductsRoutes() {
+    this.routes.get("/products/getall", ProductsController.index);
   }
 }
 export default new Routes().routes;
