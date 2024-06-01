@@ -33,6 +33,12 @@ class Routes {
 
   private ProductsRoutes() {
     this.routes.get("/products/getall", ProductsController.index);
+    this.routes.post(
+      "/products/store",
+      Middlewares.authMiddleware,
+      Middlewares.imageUpload.array("images"),
+      ProductsController.store
+    );
   }
 }
 export default new Routes().routes;

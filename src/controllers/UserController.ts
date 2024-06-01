@@ -119,7 +119,7 @@ class UserController {
 
   public async update(req: Request, res: Response): Promise<any> {
     try {
-      let user = (await Token.getUser(req, res)) as UsersModel;
+      let user: UsersModel = await Token.getUser(req, res);
       const { name, email, phone, password, confirmpassword } =
         req.body as UsersModel;
       if (req.file) {

@@ -1,6 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 import { ProductsInterface } from "../interfaces/Products.interface";
 
+export interface ProductsModel extends ProductsInterface, Document {}
+
 const ProductsSchema: Schema = new Schema({
   owner: Object,
   name: {
@@ -25,7 +27,7 @@ const ProductsSchema: Schema = new Schema({
   },
   images: {
     type: [String],
-    required: false,
+    required: true,
   },
   description: {
     type: String,
@@ -38,5 +40,5 @@ const ProductsSchema: Schema = new Schema({
   },
   buyer: { type: Object, equired: false },
 });
-export interface ProductsModel extends ProductsInterface, Document {}
+
 export default model<ProductsModel>("Products", ProductsSchema);
