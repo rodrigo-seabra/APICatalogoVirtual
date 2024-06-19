@@ -33,6 +33,13 @@ class Routes {
 
   private ProductsRoutes() {
     this.routes.get("/products/getall", ProductsController.index);
+    this.routes.get("/products/get/:id", ProductsController.getById);
+    this.routes.delete(
+      "/products/delete/:id",
+      Middlewares.authMiddleware,
+      ProductsController.delete
+    );
+
     this.routes.post(
       "/products/store",
       Middlewares.authMiddleware,
