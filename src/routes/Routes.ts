@@ -34,6 +34,22 @@ class Routes {
   private ProductsRoutes() {
     this.routes.get("/products/getall", ProductsController.index);
     this.routes.get("/products/get/:id", ProductsController.getById);
+    this.routes.get(
+      "/products/userproducts",
+      ProductsController.getAllUserProducts
+    );
+    this.routes.get(
+      "/products/userintention",
+      Middlewares.authMiddleware,
+      ProductsController.getAllUserIntention
+    );
+
+    this.routes.get(
+      "/products/userbuy",
+      Middlewares.authMiddleware,
+      ProductsController.getAllUserBuy
+    );
+
     this.routes.delete(
       "/products/delete/:id",
       Middlewares.authMiddleware,
@@ -45,6 +61,24 @@ class Routes {
       Middlewares.authMiddleware,
       Middlewares.imageUpload.array("images"),
       ProductsController.store
+    );
+
+    this.routes.patch(
+      "/products/edit/:id",
+      Middlewares.authMiddleware,
+      Middlewares.imageUpload.array("images"),
+      ProductsController.update
+    );
+
+    this.routes.patch(
+      "/products/schedule/:id",
+      Middlewares.authMiddleware,
+      ProductsController.schedule
+    );
+    this.routes.patch(
+      "/producst/conclude/:id",
+      Middlewares.authMiddleware,
+      ProductsController.concludeTransfer
     );
   }
 }

@@ -15,4 +15,5 @@ export interface ProductsInterface {
   description: string;
   status: "available" | "sold" | "pending";
   buyer?: DataUser;
+  userIntention?: DataUser[];
 }

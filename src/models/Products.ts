@@ -38,7 +38,8 @@ const ProductsSchema: Schema = new Schema({
     enum: ["available", "sold", "pending"],
     required: true,
   },
-  buyer: { type: Object, equired: false },
+  buyer: { type: Object, required: false },
+  userIntention: { type: [Object], required: false },
 });
 
 export default model<ProductsModel>("Products", ProductsSchema);

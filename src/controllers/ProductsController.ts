@@ -1,6 +1,5 @@
 import { json, Request, Response } from "express";
 import Products, { ProductsModel } from "../models/Products";
-import bcrypt from "bcrypt";
 import Token from "../helpers/Token";
 import { UsersModel } from "../models/Users";
 import { isValidObjectId, ObjectId } from "mongoose";
@@ -28,9 +27,120 @@ class ProductsController {
     }
   }
 
+  public async getAllUserIntention(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const user: UsersModel = await Token.getUser(req, res);
+      const products = (await Products.find({
+        "userIntention.id": user._id,
+      }).sort("-createdAt")) as ProductsModel[];
+
+      return res.status(200).json({ products });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error retrieving products", error });
+    }
+  }
+
+  public async getAllUserProducts(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    let user: UsersModel = await Token.getUser(req, res);
+    const products = (await Products.find({ "owner.id": user._id }).sort(
+      "-createdAt"
+    )) as ProductsModel[];
+    return res.status(200).json({ products });
+  }
+
+  public async getAllUserBuy(req: Request, res: Response): Promise<Response> {
+    let user: UsersModel = await Token.getUser(req, res);
+    const products = (await Products.find({ "buyer.id": user._id }).sort(
+      "-createdAt"
+    )) as ProductsModel[];
+    return res.status(200).json({ products });
+  }
+
+  public async schedule(req: Request, res: Response): Promise<Response> {
+    const id: string = req.params.id;
+    const product = (await Products.findOne({ _id: id })) as ProductsModel;
+    let user: UsersModel = await Token.getUser(req, res);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product não encontrado!" });
+    }
+
+    if (product.owner.id === user._id) {
+      return res.status(422).json({
+        message: "Você não pode agendar uma visita com o seu próprio produto!",
+      });
+    }
+
+    if (product.buyer && product.buyer.id === user._id) {
+      return res
+        .status(422)
+        .json({ message: "Você já agendou uma visita com esse produto" });
+    } else {
+      product.userIntention = [
+        {
+          id: user._id,
+          name: user.name,
+          CPF: user.CPF,
+        },
+      ];
+      product.status = "pending";
+    }
+
+    try {
+      await Products.findByIdAndUpdate(id, product);
+      return res.status(200).json({
+        message: `A visita foi agendada com sucesso, entre em contato com ${product.owner.name} caso necessario`,
+      });
+    } catch (error) {
+      return res.status(400).json({ message: error });
+    }
+  }
+
+  public async concludeTransfer(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    const id: string = req.params.id;
+    const product = (await Products.findOne({ _id: id })) as ProductsModel;
+    let user: UsersModel = await Token.getUser(req, res);
+    if (!product) {
+      return res.status(404).json({ message: "Produto não encontrado!" });
+    }
+    if (product.buyer?.id === user._id) {
+      return res.status(422).json({
+        message:
+          "Houve um problema ao processar a sua solicitação, tente novamente mais tarde!",
+      });
+    } else {
+      product.status = "sold";
+      product.buyer = {
+        id: user._id,
+        name: user.name,
+        CPF: user.CPF,
+      };
+      product.userIntention = [];
+    }
+
+    try {
+      await Products.findByIdAndUpdate(id, product);
+      return res.status(200).json({
+        message: "Parabéns! O ciclo de compra foi finalizado com sucesso!",
+      });
+    } catch (err) {
+      return res.status(400).json({ message: err });
+    }
+  }
+
   public async update(req: Request, res: Response): Promise<Response> {
     const id: string = req.params.id;
-    let user: UsersModel = await Token.getUser(req, res);
     let updateData = {} as ProductsModel;
     let { name, category, modelVehicle, year, brand, description } =
       req.body as ProductsModel;
