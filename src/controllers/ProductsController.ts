@@ -199,9 +199,12 @@ class ProductsController {
     const product: ProductsModel | null = await Products.findOne({
       _id: id,
     });
+
     if (!product) {
-      return res.status(404).json({ message: "produto não encontrado!" }); //404 - recurso não existe
-    } else if (product.owner.id !== user._id?.toString()) {
+      return res.status(404).json({ message: "produto não encontrado!" });
+    } else if (!product.owner) {
+      return res.status(404).json({ message: "produto não encontrado!" });
+    } else if (product.owner.id.toString() !== user._id?.toString()) {
       return res.status(422).json({
         message: "Houve um problema ao processar a sua solicitação!",
       });
