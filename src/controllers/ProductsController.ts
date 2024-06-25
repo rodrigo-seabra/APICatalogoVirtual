@@ -201,7 +201,7 @@ class ProductsController {
     });
     if (!product) {
       return res.status(404).json({ message: "produto não encontrado!" }); //404 - recurso não existe
-    } else if (product._id?.toString() !== user._id?.toString()) {
+    } else if (product.owner.id?.toString() !== user._id?.toString()) {
       return res.status(422).json({
         message: "Houve um problema ao processar a sua solicitação!",
       });
