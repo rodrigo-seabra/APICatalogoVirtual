@@ -36,6 +36,7 @@ class Routes {
     this.routes.get("/products/get/:id", ProductsController.getById);
     this.routes.get(
       "/products/userproducts",
+      Middlewares.authMiddleware,
       ProductsController.getAllUserProducts
     );
     this.routes.get(
