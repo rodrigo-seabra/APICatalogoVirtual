@@ -1,6 +1,6 @@
 import { UsersInterface } from "./Users.interface";
 
-interface DataUser extends Pick<UsersInterface, "name" | "CPF"> {
+interface DataUser extends Pick<UsersInterface, "name" | "phone"> {
   id: any;
 }
 

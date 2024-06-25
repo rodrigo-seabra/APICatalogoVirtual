@@ -88,7 +88,7 @@ class ProductsController {
         {
           id: user._id,
           name: user.name,
-          CPF: user.CPF,
+          phone: user.phone,
         },
       ];
       product.status = "pending";
@@ -97,7 +97,7 @@ class ProductsController {
     try {
       await Products.findByIdAndUpdate(id, product);
       return res.status(200).json({
-        message: `A visita foi agendada com sucesso, entre em contato com ${product.owner.name} caso necessario`,
+        message: `A visita foi agendada com sucesso, entre em contato com ${product.owner.name} pelo telefone ${product.owner.phone}`,
       });
     } catch (error) {
       return res.status(400).json({ message: error });
@@ -124,7 +124,7 @@ class ProductsController {
       product.buyer = {
         id: user._id,
         name: user.name,
-        CPF: user.CPF,
+        phone: user.phone,
       };
       product.userIntention = [];
     }
@@ -222,9 +222,8 @@ class ProductsController {
     let owner = {
       id: user._id,
       name: user.name,
-      CPF: user.CPF,
+      phone: user.phone,
     } as UsersModel;
-    console.log(owner);
     let { name, category, modelVehicle, year, brand, description } =
       req.body as ProductsModel;
     if (
