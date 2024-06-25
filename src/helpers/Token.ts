@@ -30,7 +30,6 @@ class Token {
     try {
       let decoded = jwt.verify(token, "010806Catalogo");
       if (decoded) {
-        console.log(decoded);
         return true;
       } else {
         return false;
