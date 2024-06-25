@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import Routes from "./routes/Routes";
 import mongoose from "mongoose";
+import "dotenv/config";
 
 class App {
   public express: express.Application;
@@ -14,14 +15,20 @@ class App {
   }
   private middleware(): void {
     this.express.use(express.json());
+    this.express.use(express.static("public"));
     this.express.use(cors());
   }
 
   private database(): void {
     mongoose.set("strictQuery", false);
-    mongoose.connect(
-      "mongodb://rodrigoseabra06:BUhpIZm1vhUnGc6A@ac-avr72uq-shard-00-00.lm62pjb.mongodb.net:27017,ac-avr72uq-shard-00-01.lm62pjb.mongodb.net:27017,ac-avr72uq-shard-00-02.lm62pjb.mongodb.net:27017/?ssl=true&replicaSet=atlas-zg21ik-shard-0&authSource=admin&retryWrites=true&w=majority&appName=testesNode"
-    );
+    const connectionString = process.env.CONNECTIONSTRING;
+    if (!connectionString) {
+      throw new Error("CONNECTIONSTRING environment variable is not defined.");
+    }
+    mongoose
+      .connect(connectionString)
+      .then(() => console.log("Connected to MongoDB"))
+      .catch((err) => console.error("Could not connect to MongoDB", err));
   }
   private routes(): void {
     this.express.use(Routes);
