@@ -12,6 +12,7 @@ class Routes {
   }
 
   private UserRoutes() {
+    this.routes.get("/user", Middlewares.authMiddleware, UserController.index);
     this.routes.post(
       "/user",
       Middlewares.imageUpload.single("image"),

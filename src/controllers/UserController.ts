@@ -5,6 +5,15 @@ import Token from "../helpers/Token";
 import { UsersModel } from "../models/Users";
 
 class UserController {
+  public async index(req: Request, res: Response): Promise<Response> {
+    let user: UsersModel = await Token.getUser(req, res);
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado!" });
+    } else {
+      return res.status(200).json({ user });
+    }
+  }
+
   public async login(req: Request, res: Response): Promise<Response> {
     const { email, password } = req.body as UsersModel;
     let userFind: UsersModel | null = await Users.findOne({ email: email });
