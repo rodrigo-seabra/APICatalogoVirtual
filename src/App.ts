@@ -11,7 +11,7 @@ class App {
     this.database();
     this.middleware();
     this.routes();
-    this.express.listen(80);
+    this.express.listen(process.env.PORT || 8080);
   }
   private middleware(): void {
     this.express.use(express.json());
